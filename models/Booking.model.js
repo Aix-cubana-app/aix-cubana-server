@@ -9,16 +9,14 @@ const bookingSchema = new Schema({
         type: String,
         required: [true, "Date is required"]
     }, 
-    type: {
-        type: String,
-        enum: ["Private lessons", "Event"],
-        required: [true, "Type of booking is required"]
+    service: {
+        type: Schema.Types.ObjectId, ref: 'Service',
+        required: [true, "You need to pick a service"]
     },   
     description: {
         type: String,
         required: [true, "You need to describe your event"]
-    }, 
-    payment: String,
+    },     
     accepted: {
         type: Boolean,
         default: false

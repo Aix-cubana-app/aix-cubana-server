@@ -19,11 +19,12 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Name is required."],
     },
-    _teacher: {
+    isTeacher: {
       type: Boolean,
       default: false
     },
-    bookings: [{ type: Schema.Types.ObjectId, ref: 'Booking' }],       
+    bookings: [{ type: Schema.Types.ObjectId, ref: 'Booking' }], 
+    teacherbookings: [{ type: Schema.Types.ObjectId, ref: 'Booking' }]      
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`

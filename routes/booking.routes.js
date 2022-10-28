@@ -16,28 +16,31 @@ const { populate } = require("../models/User.model");
 
 
 // Route for creating a new booking
-router.post("/create", isAuthenticated, (req, res, next) => {    
+router.post("/booking/create", isAuthenticated, (req, res, next) => {    
 
     const userId = req.payload._id;    
 
     let booking;
 
-    const {location, date, type, description, payment, teacher } = req.body;
+    const {location, date, service , description, teacher } = req.body;
 
-    Booking.create({location, date, type, description, payment, teacher, owner: userId}) 
+    Booking.create({location, date, service, description, teacher, owner: userId}) 
     .then( newBooking => {       
-       booking = newBooking;      
+       booking = newBooking;    
+       res.status(200).json(newBooking);  
        return  User.findByIdAndUpdate( userId, {$push: {bookings: booking._id}})
     })
-    .then( user => {        
-        return  User.findByIdAndUpdate( teacher, {$push: {bookings: booking._id}})
-    })     
+    .then( user => {
+        
+        return  User.findByIdAndUpdate( teacher, {$push: {teacherbookings: booking._id}})
+    })
+        
     .catch(err => res.json(err));        
 
 })
 
 //Route to get Booking details
-router.get("/details/:id", isAuthenticated, (req, res, next) => {
+router.get("/booking/details/:id", isAuthenticated, (req, res, next) => {
     
     const bookingId = req.params.id;  
       
@@ -52,14 +55,14 @@ router.get("/details/:id", isAuthenticated, (req, res, next) => {
 
 } )
 
-//Route to get Booking details
-router.put("/update/:id", isAuthenticated, (req, res, next) => {
+//Route to get update a Booking 
+router.put("/booking/update/:id", isAuthenticated, (req, res, next) => {
 
     const userId = req.payload._id;
     const bookingId = req.params.id;
-    const {location, date, type, description, payment, teacher } = req.body;
+    const {location, date, service, description, teacher } = req.body;
 
-    Booking.findByIdAndUpdate(bookingId, {location, date, type, description, payment, teacher, owner: userId} )    
+    Booking.findByIdAndUpdate(bookingId, {location, date, service, description, teacher, owner: userId} )    
     .then( booking => {
         res.status(200).json(booking);
     })
@@ -69,7 +72,7 @@ router.put("/update/:id", isAuthenticated, (req, res, next) => {
 
 
 //Route to delete a booking
-router.post("/delete/:id", isAuthenticated, (req, res, next) => {
+router.post("/booking/delete/:id", isAuthenticated, (req, res, next) => {
 
     
     const bookingId = req.params.id;    
@@ -93,10 +96,16 @@ router.get("/bookings", isAuthenticated, (req, res, next) => {
 
     User.findById(userId)
     .populate("bookings")
-    .then( user => {        
-       res.status(200).json(user.bookings); 
+    .populate("teacherbookings")
+    .then( user => {      
+       if(user.isTeacher){
+          res.status(200).json({bookings: user.bookings, teacherbookings: user.teacherbookings}); 
+       } else {
+          res.status(200).json({bookings: user.bookings})
+       }   
     })    
-    .catch()
+    .catch(err => res.json(err));
+
 
 })
 

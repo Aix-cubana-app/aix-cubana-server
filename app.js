@@ -18,6 +18,7 @@ require("./config")(app);
 app.use("/api", require("./routes/index.routes"));
 app.use("/auth", require("./routes/auth.routes"));
 app.use("/api", require("./routes/booking.routes"));
+app.use("/api", require("./routes/service.routes"));
 
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
