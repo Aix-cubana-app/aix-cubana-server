@@ -128,4 +128,30 @@ router.get("/verify", isAuthenticated, (req, res, next) => {
   res.status(200).json(req.payload);
 });
 
+router.get("/users", isAuthenticated, (req, res, next) => {
+
+  User.find()
+  .then( listOfUsers => {
+    res.status(200).json(listOfUsers)
+  })
+  .catch(err => res.json(err));
+
+
+})
+
+router.get("/users/teachers", isAuthenticated, (req, res, next) => {
+
+  User.find()
+  .then( listOfUsers => {
+    const listOfTechers = listOfUsers.filter( (user) => {
+      return user.isTeacher;
+    } )
+
+    res.status(200).json(listOfTechers)
+  })
+  .catch(err => res.json(err));
+
+
+})
+
 module.exports = router;

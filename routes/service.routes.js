@@ -59,9 +59,32 @@ router.put("/service/update/:id", isAuthenticated, isTeacher, (req, res, next) =
 
 } )
 
+//Route to get a Teacher services
+router.get("/service/services/:id", isAuthenticated, (req, res, next) =>{
+
+    const teachersId = req.params.id; 
+
+    Service.find()
+    .then( servicesArr => {
+        
+        const teacherServices = servicesArr.filter( service =>{           
+
+            return service.teacher == teachersId;
+            
+        } )
+        
+        
+        
+        res.status(200).json(teacherServices);
+    })
+    .catch(err => res.json(err)); 
+
+})
+
+
 
 // Route to delete a service
-
+ 
 router.post("/service/delete/:id", isAuthenticated, isTeacher, (req, res, next) =>{   
       
     serviceId = req.params.id;    

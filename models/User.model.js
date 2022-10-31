@@ -21,7 +21,7 @@ const userSchema = new Schema(
     },
     isTeacher: {
       type: Boolean,
-      default: false
+      default: false,      
     },
     bookings: [{ type: Schema.Types.ObjectId, ref: 'Booking' }], 
     teacherbookings: [{ type: Schema.Types.ObjectId, ref: 'Booking' }]      
