@@ -45,9 +45,11 @@ router.get("/booking/details/:id", isAuthenticated, (req, res, next) => {
     const bookingId = req.params.id;  
       
 
-    Booking.findById(bookingId)  
-    .populate("teacher")
-    .populate("owner")  
+    Booking.findById(bookingId)
+    .select("-_id -password -email")  
+    .populate("teacher", "-_id -password -email")
+    .populate("owner", "-_id -password -email")  
+    .populate("service")
     .then( booking => {        
         res.status(200).json(booking);
     })
@@ -96,7 +98,7 @@ router.get("/bookings", isAuthenticated, (req, res, next) => {
 
     User.findById(userId)
     .populate("bookings")
-    .populate("teacherbookings")
+    .populate("teacherbookings")    
     .then( user => {      
        if(user.isTeacher){
           res.status(200).json({bookings: user.bookings, teacherbookings: user.teacherbookings}); 
