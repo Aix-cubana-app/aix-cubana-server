@@ -1,7 +1,5 @@
 
-const isTeacher = (req, res, next) => {
-
-    console.log("WE ARE INSIDE MIDDLEWARE"+req.payload.isTeacher);
+const isTeacher = (req, res, next) => {    
 
 
 

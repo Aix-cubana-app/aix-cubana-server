@@ -85,9 +85,10 @@ router.get("/service/services/:id", isAuthenticated, (req, res, next) =>{
 
 // Route to delete a service
  
-router.post("/service/delete/:id", isAuthenticated, isTeacher, (req, res, next) =>{   
+router.delete("/service/delete/:id", isAuthenticated, isTeacher, (req, res, next) =>{   
       
     serviceId = req.params.id;    
+    console.log(serviceId);
 
     Service.findByIdAndDelete( serviceId )
     .then( deletedService => {
