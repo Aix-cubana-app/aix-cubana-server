@@ -12,7 +12,7 @@ const isTeacher = require("../middleware/isTeacher.js");
 
 //Route for creating a new service
 
-router.post("/service/create", isAuthenticated, isTeacher,  (req, res, next) =>{    
+router.post("/service/", isAuthenticated, isTeacher,  (req, res, next) =>{    
 
 
     teacherId = req.payload._id;    
@@ -30,7 +30,7 @@ router.post("/service/create", isAuthenticated, isTeacher,  (req, res, next) =>{
 
 //Route for getting service details
 
-router.get("/service/details/:id", isAuthenticated, isTeacher, (req, res, next) =>{
+router.get("/service/:id", isAuthenticated, isTeacher, (req, res, next) =>{
 
     const serviceId = req.params.id;
 
@@ -43,7 +43,7 @@ router.get("/service/details/:id", isAuthenticated, isTeacher, (req, res, next) 
 } )
 
 // Route to update a service
-router.put("/service/update/:id", isAuthenticated, isTeacher, (req, res, next) =>{    
+router.put("/service/:id", isAuthenticated, isTeacher, (req, res, next) =>{    
 
 
     teacherId = req.payload._id;    
@@ -60,7 +60,7 @@ router.put("/service/update/:id", isAuthenticated, isTeacher, (req, res, next) =
 } )
 
 //Route to get a Teacher services
-router.get("/service/services/:id", isAuthenticated, (req, res, next) =>{
+router.get("/services/:id", isAuthenticated, (req, res, next) =>{
 
     const teachersId = req.params.id; 
 
@@ -85,10 +85,10 @@ router.get("/service/services/:id", isAuthenticated, (req, res, next) =>{
 
 // Route to delete a service
  
-router.delete("/service/delete/:id", isAuthenticated, isTeacher, (req, res, next) =>{   
+router.delete("/service/:id", isAuthenticated, isTeacher, (req, res, next) =>{   
       
     serviceId = req.params.id;    
-    console.log(serviceId);
+    
 
     Service.findByIdAndDelete( serviceId )
     .then( deletedService => {

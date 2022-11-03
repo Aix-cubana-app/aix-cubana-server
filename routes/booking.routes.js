@@ -16,7 +16,7 @@ const { populate } = require("../models/User.model");
 
 
 // Route for creating a new booking
-router.post("/booking/create", isAuthenticated, (req, res, next) => {    
+router.post("/booking", isAuthenticated, (req, res, next) => {    
 
     const userId = req.payload._id;    
 
@@ -40,17 +40,17 @@ router.post("/booking/create", isAuthenticated, (req, res, next) => {
 })
 
 //Route to get Booking details
-router.get("/booking/details/:id", isAuthenticated, (req, res, next) => {
+router.get("/booking/:id", isAuthenticated, (req, res, next) => {
     
     const bookingId = req.params.id;  
       
 
-    Booking.findById(bookingId)
-    .select("-_id -password -email")  
+    Booking.findById(bookingId)     
     .populate("teacher", "-_id -password -email")
     .populate("owner", "-_id -password -email")  
     .populate("service")
-    .then( booking => {        
+    .then( booking => {     
+       
         res.status(200).json(booking);
     })
     .catch(err => res.json(err));
@@ -58,7 +58,7 @@ router.get("/booking/details/:id", isAuthenticated, (req, res, next) => {
 } )
 
 //Route to get update a Booking 
-router.put("/booking/update/:id", isAuthenticated, (req, res, next) => {
+router.put("/booking/:id", isAuthenticated, (req, res, next) => {
 
     const userId = req.payload._id;
     const bookingId = req.params.id;
@@ -74,7 +74,7 @@ router.put("/booking/update/:id", isAuthenticated, (req, res, next) => {
 
 
 //Route to delete a booking
-router.post("/booking/delete/:id", isAuthenticated, (req, res, next) => {
+router.post("/booking/:id", isAuthenticated, (req, res, next) => {
 
     
     const bookingId = req.params.id;    
@@ -97,9 +97,37 @@ router.get("/bookings", isAuthenticated, (req, res, next) => {
     
 
     User.findById(userId)
-    .populate("bookings")
-    .populate("teacherbookings")    
-    .then( user => {      
+    .populate("bookings")            
+    .populate({
+        path: 'bookings',
+        populate: [{
+            path: 'owner',
+            model: 'User',
+            select: "-_id -password -email"
+        },
+        {
+            path: 'service',
+            model: 'Service' 
+        }]
+        
+    })  
+    .populate("teacherbookings")
+    .populate({
+        path: 'teacherbookings',
+        populate: [{
+            path: 'owner',
+            model: 'User',
+            select: "-_id -password -email"
+        },
+        {
+            path: 'service',
+            model: 'Service' 
+        }]
+        
+    })     
+     
+    .then( user => {  
+           
        if(user.isTeacher){
           res.status(200).json({bookings: user.bookings, teacherbookings: user.teacherbookings}); 
        } else {
