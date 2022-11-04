@@ -74,7 +74,7 @@ router.put("/booking/:id", isAuthenticated, (req, res, next) => {
 
 
 //Route to delete a booking
-router.post("/booking/:id", isAuthenticated, (req, res, next) => {
+router.delete("/booking/:id", isAuthenticated, (req, res, next) => {
 
     
     const bookingId = req.params.id;    
