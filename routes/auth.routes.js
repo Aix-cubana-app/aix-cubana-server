@@ -20,7 +20,7 @@ const saltRounds = 10;
 router.post("/signup", (req, res, next) => {
   const { email, password, name, isTeacher } = req.body;
 
-    // Check if email or password or name are provided as empty strings
+  // Check if email or password or name are provided as empty strings
   if (email === "" || password === "" || name === "") {
     res.status(400).json({ message: "Provide email, password and name" });
     return;
@@ -63,13 +63,19 @@ router.post("/signup", (req, res, next) => {
     .then((createdUser) => {
       // Deconstruct the newly created user object to omit the password
       // We should never expose passwords publicly
-      const { email, name, _id } = createdUser;
+      const { email, name, _id, isTeacher } = createdUser;
 
-      // Create a new object that doesn't expose the password
-      const user = { email, name, _id };
+      const payload = { _id, email, name, isTeacher };
+
+      // Create a JSON Web Token and sign it
+      const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
+        algorithm: "HS256",
+        expiresIn: "6h",
+      });
 
       // Send a json response containing the user object
-      res.status(201).json({ user: user });
+      res.status(200).json({ authToken: authToken });
+      
     })
     .catch((err) => next(err)); // In this case, we send error handling to the error handling middleware.
 });
@@ -121,36 +127,30 @@ router.post("/login", (req, res, next) => {
 // GET  /auth/verify  -  Used to verify JWT stored on the client
 router.get("/verify", isAuthenticated, (req, res, next) => {
   // If JWT token is valid the payload gets decoded by the
-  // isAuthenticated middleware and is made available on `req.payload`  
+  // isAuthenticated middleware and is made available on `req.payload`
 
   // Send back the token payload object containing the user data
   res.status(200).json(req.payload);
 });
 
 router.get("/users", isAuthenticated, (req, res, next) => {
-
   User.find()
-  .then( listOfUsers => {
-    res.status(200).json(listOfUsers)
-  })
-  .catch(err => res.json(err));
-
-
-})
+    .then((listOfUsers) => {
+      res.status(200).json(listOfUsers);
+    })
+    .catch((err) => res.json(err));
+});
 
 router.get("/teachers", isAuthenticated, (req, res, next) => {
-
   User.find()
-  .then( listOfUsers => {
-    const listOfTechers = listOfUsers.filter( (user) => {
-      return user.isTeacher;
-    } )
+    .then((listOfUsers) => {
+      const listOfTechers = listOfUsers.filter((user) => {
+        return user.isTeacher;
+      });
 
-    res.status(200).json(listOfTechers)
-  })
-  .catch(err => res.json(err));
-
-
-})
+      res.status(200).json(listOfTechers);
+    })
+    .catch((err) => res.json(err));
+});
 
 module.exports = router;
